@@ -1,19 +1,21 @@
 {
-  "name": "pro-express-demos",
+  "name": "ch4",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "ch4's demo",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "xiufu.yuan",
+  "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.15.1",
     "compression": "^1.6.2",
     "connect-busboy": "0.0.2",
     "connect-timeout": "^1.7.0",
+    "cookie-parser": "^1.4.3",
     "errorhandler": "^1.4.3",
-    "express": "^4.13.4",
+    "express-session": "^1.13.0",
     "method-override": "^2.3.6",
     "morgan": "^1.7.0",
     "response-time": "^2.3.1",
