@@ -1,4 +1,5 @@
 var express = require('express');
+var fs = require('fs');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -7,6 +8,8 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+
+var filePath = path.join(__dirname, 'files', 'Lighthouse.jpg');
 
 var app = express();
 
@@ -52,6 +55,63 @@ app.get('/set-csv', function (req, res) {
   });
 
   res.end(body);
+});
+
+app.get('/status', function (req, res) {
+  res.status(200).end();
+});
+
+app.get('/send-ok', function (req, res) {
+  res.status(200).send({message: 'Data was submitted successfully.'});
+});
+
+app.get('/send-err', function (req, res) {
+  res.status(500).send({message: 'Oops, the server is down.'});
+});
+
+app.get('/send-buf', function (req, res) {
+  res.set('Content-Type', 'text/plain');
+  res.send(new Buffer('text data that will be converted into Buffer'));
+});
+
+app.get('/json', function (req, res) {
+  res.status(200).json([
+    {title: 'Practical Node.js', tags: 'node.js express.js'},
+    {title: 'Rapid Prototyping with JS', tags: 'backbone.js node.js mongodb'},
+    {title: 'JavaScript: The Good Parts', tags: 'javascript'}
+  ]);
+});
+
+app.get('/jsonp', function (req, res) {
+  res.status(200).jsonp([
+    {title: 'Express.js Guide', tags: 'node.js express.js'},
+    {title: 'Rapid Prototyping with JS', tags: 'backbone.js, node.js, mongodb'},
+    {title: 'JavaScript: The Good Parts', tags: 'javascript'}
+  ]);
+});
+
+app.get('/non-stream1', function (req, res) {
+  res.send(fs.readFileSync(filePath));
+});
+
+app.get('/non-stream2', function (req, res) {
+  fs.readFile(filePath, function (error, data) {
+    res.end(data);
+  });
+});
+
+app.get('/stream1', function (req, res) {
+  fs.createReadStream(filePath).pipe(res);
+});
+
+app.get('/stream2', function (req, res) {
+  var stream = fs.createReadStream(filePath);
+  stream.on('data', function (data) {
+    res.write(data);
+  });
+  stream.on('end', function () {
+    res.end()
+  });
 });
 
 // catch 404 and forward to error handler
