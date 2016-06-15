@@ -28,6 +28,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
+app.locals.lang = 'zh_cn';
+app.locals.author = 'xiufu.yuan';
+
 app.get('/render', function (req, res) {
   res.render('render', {title: 'Pro Express.js'});
 });
