@@ -16,6 +16,21 @@ var errorHandler = require('errorhandler');
 var app = express();
 var db = mongoskin.db('mongodb://localhost:27017/todo?auto_reconnect', {safe: true});
 
+app.use(function (req, res, next) {
+  req.db = {};
+  req.db.tasks = db.collection('tasks');
+  return next();
+});
+
+app.param('task_id', function (req, res, next, taskId) {
+  req.db.tasks.findById(taskId, function (error, task) {
+    if (error) return next(error);
+    if (!task) return next(new Error('Task is not found.'));
+    req.task = task;
+    return next();
+  });
+});
+
 var routes = require('./routes/index');
 var tasks = require('./routes/task');
 
@@ -46,25 +61,10 @@ app.use(function (req, res, next) {
   return next();
 });
 
-app.use(function (req, res, next) {
-  req.db = {};
-  req.db.tasks = db.collection('tasks');
-  return next();
-});
-
-app.param('task_id', function (req, res, next, taskId) {
-  req.db.tasks.findById(taskId, function (error, task) {
-    if (error) return next(error);
-    if (!task) return next(new Error('Task is not found.'));
-    req.task = task;
-    return next();
-  });
-});
-
 app.get('/', routes.index);
 app.get('/tasks', tasks.list);
 app.post('/tasks', tasks.markAllCompleted)
-app.post('/tasks', tasks.add);
+app.post('/add', tasks.add);
 app.post('/tasks/:task_id', tasks.markCompleted);
 app.delete('/tasks/:task_id', tasks.del);
 app.get('/tasks/completed', tasks.completed);
